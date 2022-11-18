@@ -807,7 +807,7 @@ float Curve2D::get_bake_interval() const {
 	return bake_interval;
 }
 
-Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
+Vector2 Curve2D::get_baked_closest_point(const Vector2 &p_to_point) const {
 	// Brute force method
 
 	if (baked_cache_dirty) {
@@ -838,6 +838,34 @@ Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
 
 		if (nearest_dist < 0.0f || dist < nearest_dist) {
 			nearest = proj;
+			nearest_dist = dist;
+		}
+	}
+
+	return nearest;
+}
+
+Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
+	// Brute force method
+
+	//validate//
+	int pc = points.size();
+	ERR_FAIL_COND_V_MSG(pc == 0, Vector2(), "No points in Curve2D.");
+
+	if (pc == 1) {
+		return points.get(0).pos;
+	}
+
+	Vector2 nearest;
+	float nearest_dist = -1.0f;
+
+	for (int i = 0; i < pc - 1; i++) {
+		Vector2 origin = points[i].pos;
+
+		float dist = origin.distance_squared_to(p_to_point);
+
+		if (nearest_dist < 0.0f || dist < nearest_dist) {
+			nearest = origin;
 			nearest_dist = dist;
 		}
 	}
@@ -980,6 +1008,7 @@ void Curve2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_baked_length"), &Curve2D::get_baked_length);
 	ClassDB::bind_method(D_METHOD("interpolate_baked", "offset", "cubic"), &Curve2D::interpolate_baked, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("get_baked_points"), &Curve2D::get_baked_points);
+	ClassDB::bind_method(D_METHOD("get_baked_closest_point", "to_point"), &Curve2D::get_baked_closest_point);
 	ClassDB::bind_method(D_METHOD("get_closest_point", "to_point"), &Curve2D::get_closest_point);
 	ClassDB::bind_method(D_METHOD("get_closest_offset", "to_point"), &Curve2D::get_closest_offset);
 	ClassDB::bind_method(D_METHOD("tessellate", "max_stages", "tolerance_degrees"), &Curve2D::tessellate, DEFVAL(5), DEFVAL(4));
@@ -1441,7 +1470,7 @@ PoolVector3Array Curve3D::get_baked_up_vectors() const {
 	return baked_up_vector_cache;
 }
 
-Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
+Vector3 Curve3D::get_baked_closest_point(const Vector3 &p_to_point) const {
 	// Brute force method
 
 	if (baked_cache_dirty) {
@@ -1472,6 +1501,34 @@ Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
 
 		if (nearest_dist < 0.0f || dist < nearest_dist) {
 			nearest = proj;
+			nearest_dist = dist;
+		}
+	}
+
+	return nearest;
+}
+
+Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
+	// Brute force method
+
+	//validate//
+	int pc = points.size();
+	ERR_FAIL_COND_V_MSG(pc == 0, Vector3(), "No points in Curve3D.");
+
+	if (pc == 1) {
+		return points.get(0).pos;
+	}
+
+	Vector3 nearest;
+	float nearest_dist = -1.0f;
+
+	for (int i = 0; i < pc - 1; i++) {
+		Vector3 origin = points[i].pos;
+
+		float dist = origin.distance_squared_to(p_to_point);
+
+		if (nearest_dist < 0.0f || dist < nearest_dist) {
+			nearest = origin;
 			nearest_dist = dist;
 		}
 	}
@@ -1651,6 +1708,7 @@ void Curve3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_baked_points"), &Curve3D::get_baked_points);
 	ClassDB::bind_method(D_METHOD("get_baked_tilts"), &Curve3D::get_baked_tilts);
 	ClassDB::bind_method(D_METHOD("get_baked_up_vectors"), &Curve3D::get_baked_up_vectors);
+	ClassDB::bind_method(D_METHOD("get_baked_closest_point", "to_point"), &Curve3D::get_baked_closest_point);
 	ClassDB::bind_method(D_METHOD("get_closest_point", "to_point"), &Curve3D::get_closest_point);
 	ClassDB::bind_method(D_METHOD("get_closest_offset", "to_point"), &Curve3D::get_closest_offset);
 	ClassDB::bind_method(D_METHOD("tessellate", "max_stages", "tolerance_degrees"), &Curve3D::tessellate, DEFVAL(5), DEFVAL(4));
